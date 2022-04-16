@@ -1,0 +1,38 @@
+Body {
+  text-align: center;
+  background-color: #E4E4E4;
+}
+
+ul {
+  list-style-type: none;
+}
+
+.header {
+  border-radius: 10px;
+  background-color: #F5F5F5;
+  margin: 5px;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo {
+  height: 50px;
+  padding: 15px;
+  display: inline-block;
+}
+
+.menu {
+  display: inline-block;
+  top: 30px;
+  left: 20px;
+  position: absolute;
+ 
+}
+
+.menuImg {
+  height: 30px;
+}
+
+.popup {
+  position: relative;
+}

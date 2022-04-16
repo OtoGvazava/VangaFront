@@ -1,0 +1,58 @@
+.App {
+  text-align: center;
+}
+
+#answerCanvas {
+  border-width: 2px;
+  border-style: solid;
+}
+
+.canvasDiv {
+  display: inline-block;
+  margin: 2.5px;
+}
+
+.writeCodeDiv {
+  vertical-align: top;
+  display: inline-block;
+  height: 900px;
+  width: 600px;
+  margin: 2.5px;
+}
+
+.gameDetailDiv {
+  vertical-align: top;
+  display: inline-block;
+  height: 900px;
+  width: 600px;
+  margin: 2.5px;
+}
+
+#codeText {
+  display: block;
+  resize: none;
+  width: 100%;
+  height: 800px;
+  margin-bottom: 10px;
+}
+
+.compileButton {
+  height: 50px;
+  width: 100px; 
+  top: 50%;
+}
+
+#titleInput {
+  margin: 5px;
+  display: block;
+}
+
+#mainImage {
+  margin: 5px;
+  display: block;
+}
+
+.variantsImg {
+  max-width: 300px;
+  max-height: 200px;
+}

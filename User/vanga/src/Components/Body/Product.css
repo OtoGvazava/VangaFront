@@ -1,0 +1,15 @@
+.ProductList {
+    background-color: #F5F5F5;
+    border-radius: 10px;
+    margin: 5px;
+    padding: 5px;
+}
+
+.ProductListImg {
+    border-radius: 10px;
+    width: 100%;
+}
+
+.ProductListText {
+    font-weight: 1000;
+}
