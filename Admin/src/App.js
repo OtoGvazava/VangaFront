@@ -1,16 +1,17 @@
 import './App.css';
-import React, {useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 
 const App = () => {
   const [variants, setVariants] = useState([]);
-  const [texts, setTexts] = useState([""]);
+  const [texts, setTexts] = useState([{ka: "", ma: ""}]);
   const [images, setImages] = useState([""]);
-  const [title, setTitle] = useState("Game Title");
+  const [title, setTitle] = useState({ka: "", ma: ""});
   const [mainImage, setMainImage] = useState("");
   const [playerName, setPlayerName] = useState("");
   const [profileImage, setProfileImage] = useState("");
   const [gender, setGender] = useState("Neutral");
   const [variantForCanvas, setVariantForCanvas] = useState(0);
+  const [isSending, setIsSending] = useState(false);
 
   const startDrawFunction = {
     drawFunction: function (ctx, profileImage, playerName, title, variant) 
@@ -67,11 +68,18 @@ const App = () => {
     setDrawFunction(drawFunction);
   }
 
-  const textOnChange = (e, index) => {
+  const textOnChange = (e, index, lang) => {
     const {value} = e.target;
     const list = [...texts];
-    list[index] = value;
-    setTexts(list);
+    if (lang == 'ka') {
+      list[index] = {ka: value, ma: texts[index].ma};
+      setTexts(list);
+    }
+
+    if (lang == 'ma') {
+      list[index] = {ka: texts[index].ka, ma: value};
+      setTexts(list);
+    }
   }
 
   const textRemove = (index) => {
@@ -92,6 +100,7 @@ const App = () => {
       const list = [...images];
       list[index] = reader.result;
       setImages(list);
+      console.log(list)
     }
   }
 
@@ -155,21 +164,31 @@ const App = () => {
     changeCode();
   }
 
-  const sendGame = () => {
+  const sendGame = async () => {
+    if (!isSending && mainImage.length > 0 && variants.length > 0 && title.ka.length > 0 && title.ma.length > 0) {
 
-    let jsonData = {
-      "title": title,
-      "mainImage": mainImage,
-      "variantsString": JSON.stringify(variants),
-      "drawFunction": objectToJSONString(drawFunction),
-      "publish_datetime": new Date()
-    };
+      setIsSending(true);
 
-    fetch('http://127.0.0.1:8000/api/createProduct', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(jsonData) // body data type must match "Content-Type" header
-    })
+      let jsonData = {
+        "title": JSON.stringify(title),
+        "mainImage": mainImage,
+        "variantsString": JSON.stringify(variants),
+        "drawFunction": objectToJSONString(drawFunction),
+        "publish_datetime": new Date()
+      };
+
+      await fetch('http://127.0.0.1:8000/api/createGame/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(jsonData) // body data type must match "Content-Type" header
+      });
+
+      setIsSending(false);
+
+      alert("თამაში წარმატებით აიტვირთა!");
+    } else {
+      alert("გთხოვთ შეავსოთ სავალდებულო ველები!");
+    }
   }
 
   useEffect(() => {
@@ -192,12 +211,13 @@ const App = () => {
       </div>
       <div className='gameDetailDiv'>
         <div className='mainDetail'>
-          <input placeholder='Input game title' id='titleInput' value={title} onChange={(e) => setTitle(e.target.value)}></input>
+          <input placeholder='Input game title ka' id='titleInputKa' value={title.ka} onChange={(e) => setTitle({ka: e.target.value, ma: title.ma})}></input>
+          <input placeholder='Input game title ma' id='titleInputEn' value={title.ma} onChange={(e) => setTitle({ka: title.ka, ma: e.target.value})}></input>
           <input placeholder='Input player name' id='playerNameInput' value={playerName} onChange={(e) => setPlayerName(e.target.value)}></input>
           <p>Upload main Image:</p>
-          <input placeholder='Upload main photo' id='mainImage' type="file" name="img" accept="image/*" files={[mainImage]} onChange={(e) => mainImageOnChange(e)}></input>
+          <input files={[mainImage]} placeholder='Upload main photo' id='mainImage' type="file" name="img" accept="image/*" onChange={(e) => mainImageOnChange(e)}></input>
           <p>Upload profile image:</p>
-          <input placeholder='Upload profile image' id='profileImage' type="file" name="img" accept="image/*" files={[profileImage]} onChange={(e) => setProfileImage(URL.createObjectURL(e.target.files[0]))}></input>
+          <input placeholder='Upload profile image' id='profileImage' type="file" name="img" accept="image/*" onChange={(e) => setProfileImage(URL.createObjectURL(e.target.files[0]))}></input>
         </div>
         <div className='gameVariantsDiv'>
             <h2>Variants:</h2>
@@ -207,7 +227,10 @@ const App = () => {
                 {variant.texts.map((text, index) => (
                   <div>
                     <h3>text {index}</h3>
-                    <p>{text}</p>
+                    <p>input ka</p>
+                    <p>{text.ka}</p>
+                    <p>input ma</p>
+                    <p>{text.ma}</p>
                   </div>
                 ))}
                 {variant.images.map((image, index) => (
@@ -227,7 +250,10 @@ const App = () => {
           {texts.map((text, index) => (
             <div>
               <p>text {index}</p>
-              <input type="text" value={text} onChange={(e) => textOnChange(e, index)} required></input> 
+              <p>input ka</p>
+              <input type="text" value={text.ka} onChange={(e) => textOnChange(e, index, "ka")} required></input>
+              <p>input ma</p>
+              <input type="text" value={text.ma} onChange={(e) => textOnChange(e, index, "ma")} required></input> 
               {texts.length > 1 && <button onClick={() => textRemove(index)}>Remove Text</button>}
             </div>))
           }
